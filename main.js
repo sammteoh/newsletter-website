@@ -901,9 +901,7 @@ function renderWriterPage() {
 document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
 
-    renderHomePage();
-
-    if (path.endsWith("index.html") || path === "/") {
+    if (path.endsWith("index.html") || path === "/" || path === "/newsletter-website/") {
         renderHomePage();
     } else if (path.endsWith("features.html")) {
         renderFeaturesPage();
