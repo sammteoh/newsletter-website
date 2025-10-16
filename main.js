@@ -40,12 +40,22 @@ function createArticleCard(article, className = "featured-article", wordLimit = 
         ? `<img src="${article.image}" alt="${article.title}" class="cover-image">`
         : "";
 
-    card.innerHTML = `
-        ${imageHTML}
-        <h3><a href="article.html?id=${article.id}">${article.title}</a></h3>
-        <p><em>${article.author} • ${article.date}</em></p>
-        <p>${sliceWords(article.content, wordLimit)}</p>
-    `;
+    if (article.category === "Feature") {
+        card.innerHTML = `
+            ${imageHTML}
+            <h3><a href="article.html?id=${article.id}">${article.title}</a></h3>
+            <h4>featuring ${article.feature}</h4>
+            <p><em>${article.author} • ${article.date}</em></p>
+            <p>${sliceWords(article.content, wordLimit)}</p>
+        `;
+    } else {
+        card.innerHTML = `
+            ${imageHTML}
+            <h3><a href="article.html?id=${article.id}">${article.title}</a></h3>
+            <p><em>${article.author} • ${article.date}</em></p>
+            <p>${sliceWords(article.content, wordLimit)}</p>
+        `;
+    }
 
     card.addEventListener("click", () => {
         window.location.href = `article.html?id=${article.id}`;
@@ -744,11 +754,21 @@ function renderSchoolUpdatesPage() {
 }
 
 function renderIntramuralsPage() {
-    const container = document.getElementById("Intramurals");
-    if (container) {
-        container.innerHTML = `<h2>Intramurals</h2>`;
-        renderCategorizedArticles(container, "Intramurals");
-    }
+    const container = document.getElementById("intramurals-page");
+    container.classList.add("main-container");
+    container.innerHTML = "";
+
+    const updatesContainer = document.createElement("div");
+    updatesContainer.id = "intramurals-updates-container";
+
+    const leftContainer = document.createElement("div");
+    leftContainer.id = "intramurals-left-container";
+
+    const rightContainer = document.createElement("div");
+    rightContainer.id = "intramurals-right-container";
+
+    
+    
 }
 
 function createYearSelectDropdown(options, defaultValue, onChangeCallback) {
@@ -917,5 +937,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (path.endsWith("writer-page.html")) {
         renderWriterPage();
     } else if (path.endsWith("intramurals.html")) {
+        renderIntramuralsPage();
     } 
 });

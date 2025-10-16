@@ -1,0 +1,23 @@
+Sport,Gender,Date,House1,House2,Points1,Points2,Stars1,Stars2,Sub1,Sub2,Outcome1,Outcome2
+Table Tennis,Male,8/22/25,Blue Tang,Wolfpack,11,2,"Shota Fukumoto, William Lee","Filippe Chieh, Dino Wang",,,Win,Loss
+Table Tennis,Male,8/22/25,Swarm,Gator Nation,11,9,"Brandon Chen, Ayomi Pheirim","Leo Li, Gene Tseng",,,Win,Loss
+Table Tennis,Male,8/22/25,Wolfpack,Gator Nation,5,11,"Filippe Chieh, Dino Wang","Leo Li, Gene Tseng",,,Loss,Win
+Table Tennis,Male,8/22/25,Blue Tang,Swarm,0,0,"Aaron Yu, Anderson Lu","Brandon Chen, Ayomi Pheirim",,,Loss,Win
+Table Tennis,Male,8/22/25,Swarm,Wolfpack,11,2,"Moroni Chen, Ayomi Pheirim","Luke Liang, Dino Wang",,,Win,Loss
+Table Tennis,Male,8/22/25,Blue Tang,Gator Nation,6,11,"Shota Fukumoto, William Lee","Gene Tseng, Satoru Kumazawa",,,Loss,Win
+Table Tennis,Female,8/29/25,Gator Nation,Blue Tang,1,11,"Alisa Spapen, Wawa Wang","Nina Feng, Rebecca Chen",,,Loss,Win
+Table Tennis,Female,8/29/25,Swarm,Wolfpack,11,9,"Liz Aoyama, Ayu Ogura","Jolie Lin, Steffi Tsai",,,Win,Loss
+Table Tennis,Female,8/29/25,Blue Tang,Swarm,11,7,"Nina Feng, Rebecca Chen","Liz Aoyama, Ayu Ogura",,,Win,Loss
+Table Tennis,Female,8/29/25,Wolfpack,Gator Nation,11,6,"Jolie Lin, Steffi Tsai","Renee Wu, Esther Krushnisky",,,Win,Loss
+Table Tennis,Female,8/29/25,Swarm,Gator Nation,11,1,"Liz Aoyama, Ayu Ogura","Renee Wu, Esther Krushnisky",,,Win,Loss
+Table Tennis,Female,8/29/25,Blue Tang,Wolfpack,6,11,"Nina Feng, Rebecca Chen","Jolie Lin, Steffi Tsai",,,Loss,Win
+Table Tennis,,9/5/25,Swarm,Wolfpack,9,11,"Ayomi Pheirim, Liz Aoyama","Jolie Lin, Filippe Chieh",,,Loss,Win
+Table Tennis,,9/5/25,Gator Nation,Blue Tang,16,14,"Leo Li, Izumi Fukumoto","Shota Fukumoto, Nina Feng",,,Win,Loss
+Table Tennis,,9/5/25,Blue Tang,Swarm,11,6,"Shota Fukumoto, Nina Feng","Ayomi Pheirim, Liz Aoyama",,,Win,Loss
+Table Tennis,,9/5/25,Wolfpack,Gator Nation,11,8,"Steffi Tsai, Filippe Chieh","Leo Li, Izumi Fukumoto",,,Win,Loss
+Table Tennis,,9/5/25,Blue Tang,Wolfpack,5,11,"Shota Fukumoto, Nina Feng","Jolie Lin, Filippe Chieh",,,Loss,Win
+Table Tennis,,9/5/25,Swarm,Gator Nation,11,5,"Ayomi Pheirim, Liz Aoyama","Satoru Kumazawa, Esther Krushnisky",,,Win,Loss
+Basketball,Male,10/3/25,Gator Nation,Wolfpack,12,3,"Leo Li, Gene Tseng, Satoru Kumazawa","Filippe Chieh, Luke Liang, Happy Duan",,,Win,Loss
+Basketball,Male,10/3/25,Swarm,Blue Tang,9,8,"Ayomi Pheirim, Moroni Chen, Chiung Wu","Shota Fukumoto, Kuan Jian, Anderson Lu",,,Win,Loss
+Maxball,Female,10/3/25,Blue Tang,Swarm,1,0,"Miu Yoshii, Rebecca Chen, Nina Feng, Stella Liao, Connie Huang","Ayu Ogura, Lillian Lin, Liz Aoyama, Hana Sato, Phoebe Lee",,,Win,Loss
+Maxball,Female,10/3/25,Gator Nation,Wolfpack,4,2,"Renee Wu, Larissa Kuo, Yuna Wu, Elizabeth Farrow, Izumi Fukumoto","Jolie Lin, Hinako Tai, Cheryl Lee, Steffi Tsai, Alisa Spapen",Esther Krushnisky,,Win,Loss
