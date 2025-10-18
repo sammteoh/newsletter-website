@@ -2,6 +2,7 @@ const params = new URLSearchParams(window.location.search);
 const articleId = params.get('id');
 const recentMonths = ["October", "September"];
 const today = new Date();
+const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
 
 const formattedDate = today.toLocaleDateString("en-US", {
   weekday: "long",
@@ -14,6 +15,8 @@ const jobOrder = ["Editor-in-Chief", "Communications Director", "Editor", "Spons
 
 const dateElement = document.getElementById("current-date");
 dateElement.textContent = formattedDate;
+
+// -------------------- FUNCTIONS -------------------------------------
 
 function sliceWords(text, number) {
   const words = text.split(/\s+/);
@@ -57,19 +60,39 @@ function createArticleCard(article, className = "featured-article", wordLimit = 
         `;
     }
 
-    card.addEventListener("click", () => {
-        window.location.href = `article.html?id=${article.id}`;
-    });
-
     return card;
 }
 
-// RENDER ARTICLE PAGE
+function createYearSelectDropdown(options, defaultValue, onChangeCallback) {
+    const container = document.createElement("div");
+    container.id = "year-select-container";
+
+    const select = document.createElement("select");
+    select.id = "year-select";
+
+    options.forEach(year => {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        if (year === defaultValue) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    });
+
+    if (onChangeCallback) {
+        select.addEventListener("change", e => onChangeCallback(e.target.value));
+    }
+
+    container.appendChild(select);
+    return container;
+}
+
+// -------------------- RENDER PAGES ----------------------------------
 
 if (articleId) {    
     const articleData = articles.find(a => a.id === articleId);
     const writerData = writers.find(w => w.name === articleData.author);
-    const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     const categoryArticles = sortedArticles.filter(article => article.category === articleData.category).slice(0, 4);
     const categoryArticlesToShow = categoryArticles.filter(a => a.id !== articleData.id).slice(0, 3);
 
@@ -234,7 +257,6 @@ function renderHomePage() {
     const sectionArticleContainer = document.createElement("div");
     sectionArticleContainer.id = "section-article-container";
 
-    const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     const featureArticles = sortedArticles.filter(article => article.category === "Feature");
     const featureCoverArticles = featureArticles.slice(0, 3);
     const schoolArticles = sortedArticles.filter(article => article.category === "School Updates");
@@ -356,6 +378,12 @@ function renderHomePage() {
     container.appendChild(mainContainer);
     container.appendChild(sectionArticleContainer);
     
+    document.body.addEventListener("click", e => {
+        const card = e.target.closest(".article-card");
+        if (!card) return;
+        const link = card.querySelector("h3 a");
+        if (link) window.location.href = link.href;
+    });
 }
 
 function renderFeaturesPage() {
@@ -395,7 +423,6 @@ function renderFeaturesPage() {
     const sectionContainer = document.createElement("div");
     sectionContainer.id = "features-page-section-container";
 
-    const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     const filteredArticles = sortedArticles.filter(article => article.category === "Feature");
     const coverArticles = filteredArticles.filter(article => article.type === "Cover");
     const secondaryArticles = filteredArticles.filter(article => article.type === "Secondary");
@@ -554,6 +581,13 @@ function renderFeaturesPage() {
         }
     });
 
+    document.body.addEventListener("click", e => {
+        const card = e.target.closest(".article-card");
+        if (!card) return;
+        const link = card.querySelector("h3 a");
+        if (link) window.location.href = link.href;
+    });
+
     featureContainer.appendChild(featureCoverContainer);
     featureContainer.appendChild(featureSecondaryContainer);
     featureContainer.appendChild(featureTertiaryContainer);
@@ -601,7 +635,6 @@ function renderSchoolUpdatesPage() {
     const sectionArticleContainer = document.createElement("div");
     sectionArticleContainer.id = "section-article-container";
 
-    const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
     const filteredArticles = sortedArticles.filter(article => article.category === "School Updates");
     const recentArticles = filteredArticles.filter(article => article.date.includes(recentMonths[0]) || article.date.includes(recentMonths[1])).slice(0, 4);
     const recentCoverArticle = recentArticles[0];
@@ -751,49 +784,13 @@ function renderSchoolUpdatesPage() {
     container.appendChild(recentContainer);
     container.appendChild(SAContainer);
     container.appendChild(sectionArticleContainer);
-}
 
-function renderIntramuralsPage() {
-    const container = document.getElementById("intramurals-page");
-    container.classList.add("main-container");
-    container.innerHTML = "";
-
-    const updatesContainer = document.createElement("div");
-    updatesContainer.id = "intramurals-updates-container";
-
-    const leftContainer = document.createElement("div");
-    leftContainer.id = "intramurals-left-container";
-
-    const rightContainer = document.createElement("div");
-    rightContainer.id = "intramurals-right-container";
-
-    
-    
-}
-
-function createYearSelectDropdown(options, defaultValue, onChangeCallback) {
-    const container = document.createElement("div");
-    container.id = "year-select-container";
-
-    const select = document.createElement("select");
-    select.id = "year-select";
-
-    options.forEach(year => {
-        const option = document.createElement("option");
-        option.value = year;
-        option.textContent = year;
-        if (year === defaultValue) {
-            option.selected = true;
-        }
-        select.appendChild(option);
+    document.body.addEventListener("click", e => {
+        const card = e.target.closest(".article-card");
+        if (!card) return;
+        const link = card.querySelector("h3 a");
+        if (link) window.location.href = link.href;
     });
-
-    if (onChangeCallback) {
-        select.addEventListener("change", e => onChangeCallback(e.target.value));
-    }
-
-    container.appendChild(select);
-    return container;
 }
 
 function renderStaffPage(selectedYear="2025-26") {
@@ -916,6 +913,13 @@ function renderWriterPage() {
 
     container.appendChild(header);
     container.appendChild(articleContainer);
+
+    document.body.addEventListener("click", e => {
+        const card = e.target.closest(".article-card");
+        if (!card) return;
+        const link = card.querySelector("h3 a");
+        if (link) window.location.href = link.href;
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -936,7 +940,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } else if (path.endsWith("writer-page.html")) {
         renderWriterPage();
-    } else if (path.endsWith("intramurals.html")) {
-        renderIntramuralsPage();
-    } 
+    }
 });

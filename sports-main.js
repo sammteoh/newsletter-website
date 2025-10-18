@@ -67,6 +67,23 @@ function formatPlayers(list, label) {
     </div>
   `;
 }
+
+function getMostRecentGameDate(games) {
+    if (!games || games.length === 0) return null;
+
+    const dates = games.map(g => {
+        const parts = g.Date.split("/");
+        const month = parseInt(parts[0], 10) - 1;
+        const day = parseInt(parts[1], 10);
+        const year = 2000 + parseInt(parts[2], 10);
+        return new Date(year, month, day);
+    });
+
+    const mostRecent = new Date(Math.max(...dates));
+
+    return mostRecent.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+}
+
 // ---------------- STUDENT FUNCTIONS ---------------------
 
 function getPlayerStats(games, playerName, sport = null) {
@@ -174,26 +191,22 @@ function getPlayerRanking(games, playerName, sport = null) {
 
          if ((g.Stars1 || []).includes(playerName)) {
                 isStar = true;
-                winLossPoints = g.Outcome1.toLowerCase() === "win" ? 1 :
-                                g.Outcome1.toLowerCase() === "loss" ? -1 : 0;
+                winLossPoints = g.Outcome1.toLowerCase() === "win" ? 1 : 0
                 pointDiff = g.Points1 - g.Points2;
                 totalPoints += g.Points1;
             } else if ((g.Sub1 || []).includes(playerName)) {
                 isSub = true;
-                winLossPoints = g.Outcome1.toLowerCase() === "win" ? 1 :
-                                g.Outcome1.toLowerCase() === "loss" ? -1 : 0;
+                winLossPoints = g.Outcome1.toLowerCase() === "win" ? 1 : 0
                 pointDiff = g.Points1 - g.Points2;
                 totalPoints += g.Points1;
             } else if ((g.Stars2 || []).includes(playerName)) {
                 isStar = true;
-                winLossPoints = g.Outcome2.toLowerCase() === "win" ? 1 :
-                                g.Outcome2.toLowerCase() === "loss" ? -1 : 0;
+                winLossPoints = g.Outcome2.toLowerCase() === "win" ? 1 : 0
                 pointDiff = g.Points2 - g.Points1;
                 totalPoints += g.Points2;
             } else if ((g.Sub2 || []).includes(playerName)) {
                 isSub = true;
-                winLossPoints = g.Outcome2.toLowerCase() === "win" ? 1 :
-                                g.Outcome2.toLowerCase() === "loss" ? -1 : 0;
+                winLossPoints = g.Outcome2.toLowerCase() === "win" ? 1 : 0
                 pointDiff = g.Points2 - g.Points1;
                 totalPoints += g.Points2;
             }
@@ -202,7 +215,7 @@ function getPlayerRanking(games, playerName, sport = null) {
 
         totalPoints = totalPoints === 0 ? 1 : totalPoints;
 
-        totalScore += (winLossPoints + (pointDiff / totalPoints)) * multiplier;
+        totalScore += (winLossPoints + (pointDiff / totalPoints) * 0.1) * multiplier;
     });
 
     return { score: totalScore }
@@ -251,20 +264,18 @@ function getHouseRanking(games, house, sport = null) {
         let pointDiff = 0;
 
          if (g.House1 === house) {
-                winLossPoints = g.Outcome1.toLowerCase() === "win" ? 1 :
-                                g.Outcome1.toLowerCase() === "loss" ? -1 : 0;
+                winLossPoints = g.Outcome1.toLowerCase() === "win" ? 1 : 0
                 pointDiff = g.Points1 - g.Points2;
                 totalPoints += g.Points1;
             } else if (g.House2 === house) {
-                winLossPoints = g.Outcome2.toLowerCase() === "win" ? 1 :
-                                g.Outcome2.toLowerCase() === "loss" ? -1 : 0;
+                winLossPoints = g.Outcome2.toLowerCase() === "win" ? 1 : 0
                 pointDiff = g.Points2 - g.Points1;
                 totalPoints += g.Points2;
             }
 
         totalPoints = totalPoints === 0 ? 1 : totalPoints;
 
-        totalScore += (winLossPoints + (pointDiff / totalPoints));
+        totalScore += (winLossPoints + (pointDiff / totalPoints) * 0.1);
     });
 
     return { score: totalScore }
@@ -329,7 +340,6 @@ function buildStudentStatsTable(games, studentName) {
         <th>Win Rate</th>
         <th>Avg Points</th>
         <th>Avg Point Diff</th>
-        <th>Score</th>
         </tr>
     `;
     table.appendChild(thead);
@@ -347,7 +357,6 @@ function buildStudentStatsTable(games, studentName) {
             <td>${stat.winRate}</td>
             <td>${stat.avgPoints}</td>
             <td>${stat.avgPointDiff}</td>
-            <td>${stat.score}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -370,7 +379,6 @@ function buildStudentStatsTable(games, studentName) {
             <tr><th>Win Rate</th><td>${overall.winRate}</td></tr>
             <tr><th>Avg Points</th><td>${overall.avgPoints}</td></tr>
             <tr><th>Avg Point Diff</th><td>${overall.avgPointDiff}</td></tr>
-            <tr><th>Score</th><td>${overall.score}</td></tr>
         </table>
     `;
     summary.innerHTML += overallTable;
@@ -419,7 +427,6 @@ function buildHouseStatsTable(games, houseName) {
         <th>Win Rate</th>
         <th>Avg Points</th>
         <th>Avg Point Diff</th>
-        <th>Score</th>
         </tr>
     `;
     table.appendChild(thead);
@@ -436,7 +443,6 @@ function buildHouseStatsTable(games, houseName) {
             <td>${stat.winRate}</td>
             <td>${stat.avgPoints}</td>
             <td>${stat.avgPointDiff}</td>
-            <td>${stat.score}</td>
         `;
 
         tbody.appendChild(tr);
@@ -460,7 +466,6 @@ function buildHouseStatsTable(games, houseName) {
             <tr><th>Win Rate</th><td>${overall.winRate}</td></tr>
             <tr><th>Avg Points</th><td>${overall.avgPoints}</td></tr>
             <tr><th>Avg Point Diff</th><td>${overall.avgPointDiff}</td></tr>
-            <tr><th>Score</th><td>${overall.score}</td></tr>
         </table>
     `;
     summary.innerHTML += overallTable;
@@ -619,7 +624,7 @@ function createHomeTable(games, selectedSport) {
 
     const houses = getSportsMetaData(games).houses;
 
-    const houseColumns = ["Rank", "House", "Score", "Wins", "Losses", "Win Rate", "Avg Points", "Avg Point Diff"];
+    const houseColumns = ["Rank", "House", "Wins", "Losses", "Win Rate", "Avg Points", "Avg Point Diff"];
 
     const houseHeadRow = document.createElement("tr");
     houseHeadRow.id = "tableHeader";
@@ -704,7 +709,7 @@ function createHomeTable(games, selectedSport) {
             .forEach(player => players.add(player));
     });
 
-    const columns = ["Rank", "Player", "Score", "Total Games", "Wins", "Losses", "Win Rate", "Avg Points", "Avg Point Diff"];
+    const columns = ["Rank", "Player", "Total Games", "Wins", "Losses", "Win Rate", "Avg Points", "Avg Point Diff"];
 
     const theadRow = document.createElement("tr");
     theadRow.id = "tableHeader";
@@ -848,10 +853,11 @@ function showHomePage() {
 }
 
 function showStatsPage(studentName) {
-  document.getElementById("sports-page-main-container").style.display = "none";
-  document.getElementById("statsPage").style.display = "block";
-  document.getElementById("sport-select").style.display = "none";
-  buildStudentStatsTable(games, studentName);
+    document.getElementById("sports-page-main-container").style.display = "none";
+    document.getElementById("statsPage").style.display = "block";
+    document.getElementById("sport-select").style.display = "none";
+    buildStudentStatsTable(games, studentName);
+    document.getElementById("backButton").addEventListener("click", showHomePage);
 }
 
 function showHouseStatsPage(houseName) {
@@ -859,9 +865,9 @@ function showHouseStatsPage(houseName) {
   document.getElementById("statsPage").style.display = "block";
   document.getElementById("sport-select").style.display = "none";
   buildHouseStatsTable(games, houseName);
+  document.getElementById("backButton").addEventListener("click", showHomePage);
 }
 
-document.getElementById("backButton").addEventListener("click", showHomePage);
 
 // STORE THE GAMES
 

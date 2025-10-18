@@ -335,7 +335,7 @@ const articles = [
     {
         title: "Obsession with Football",
         author: "William Lee",
-        feature: null,
+        feature: "William Lee",
         date: "May 29, 2025",
         issue: 16,
         category: "Feature",

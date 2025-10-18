@@ -51,6 +51,20 @@ function filterStudents(students, categoryKey, categoryValue) {
     });
 }
 
+function getMostRecentDistanceDate() {
+    if (!students || students.length === 0) return null;
+
+    const allKeys = Object.keys(students[0]).filter(k => k.startsWith("Distance_"));
+
+    if (allKeys.length === 0) return null;
+
+    const dates = allKeys.map(k => new Date(k.replace("Distance_", "")));
+
+    const latestDate = new Date(Math.max(...dates));
+
+    return latestDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+}
+
 // ------------- INDIVIDUAL CALCULATIONS ------------------------
 
 function getDistanceKeys(student) {
@@ -301,8 +315,6 @@ function calculateWeeklyRanks(students) {
         });
     });
 
-    console.log("hi");
-    console.log(weeklyRanks);
     return weeklyRanks;
 }
 
@@ -390,9 +402,11 @@ function rankHomeTable(students, order = "desc") {
       order === "asc" ? a.totalDistance - b.totalDistance : b.totalDistance - a.totalDistance
     );
 
+
     studentMetrics.forEach((entry, index) => {
         entry.rank = index + 1;
     });
+    console.log(studentMetrics)
     return studentMetrics;
 }
 
@@ -919,121 +933,9 @@ function showStatsPage(studentName, key=null) {
   document.getElementById("homePage").style.display = "none";
   document.getElementById("statsPage").style.display = "block";
   createStatsTable("statsContainer", studentName, key);
+  document.getElementById("backButton").addEventListener("click", showHomePage);
 }
 
-document.getElementById("backButton").addEventListener("click", showHomePage);
-
-// ----------------------------------- CALL TABLES ---------------------------------
-
-function callAllStudentsTable(containerId, metricKey, order = "desc") {
-    const data = rankAllStudents(students, student => findFunction(student, metricKey), order);
-    const columns = getIndividualColumns(metricKey);
-
-    createTable(containerId, data, columns);
-}
-
-function callUniqueValuesTable(containerId, key) {
-    const lowerKey = key.toLowerCase();
-
-    let values;
-
-    if (lowerKey === "individual") {
-        values = students.map(student => student.Name);
-    } else {
-        values = [...new Set(students.map(student => student[key]))];
-    }
-
-    values.sort((a, b) => String(a).localeCompare(String(b)));
-
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-
-    const wrapper = document.createElement("div");
-    wrapper.className = "table-wrapper slide-in";
-    container.appendChild(wrapper);
-
-    const table = document.createElement("table");
-    table.style.borderCollapse = "collapse";
-
-    const tbody = document.createElement("tbody");
-    values.forEach(value => {
-        const row = document.createElement("tr");
-        const valueCell = document.createElement("td");
-        valueCell.textContent = value;
-        valueCell.classList.add("clickable-name");
-
-        if (lowerKey === "individual") {   
-            valueCell.addEventListener("click", () => {
-                createStudentStatsTable(containerId, value);
-            });
-        } else {
-            valueCell.addEventListener("click", () => {
-                createCategoryStatsTable(containerId, value, key);
-            })
-        }
-        row.appendChild(valueCell);
-        tbody.appendChild(row);
-    })
-    table.appendChild(tbody);
-    wrapper.appendChild(table);
-
-    requestAnimationFrame(() => wrapper.classList.add("visible"));
-}
-
-function callGroupedStudentTable(containerId, categoryKey, categoryValue, metricKey) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-
-    const filteredStudents = filterStudents(students, categoryKey, categoryValue);
-    let order = "desc";
-
-    const tableData = filteredStudents.map(student => ({
-        name: student.Name,
-        category: student[categoryKey],
-        metricValue: findFunction(student, metricKey)
-    }));
-
-    if (metricKey === "Standard Deviation" || metricKey === "standardDeviation") {
-        order = "asc";
-    }
-
-    tableData.sort((a, b) => 
-      order === "asc" ? a.metricValue - b.metricValue : b.metricValue - a.metricValue
-    );
-    tableData.forEach((entry, i) => entry.rank = i + 1);
-
-    const columns = [
-        { label: "Name", key: "name"},
-        { label: metricKey, key : "metricValue"}
-    ]
-    
-    const wrapper = document.createElement("div");
-    wrapper.className = "table-wrapper";
-
-    const heading = document.createElement("h3");
-    heading.textContent = `${categoryValue}`;
-    wrapper.appendChild(heading);
-
-    const tableDiv = document.createElement("div");
-    const tableId = `${categoryKey}-${categoryValue}-table`;
-    tableDiv.id = tableId;
-    wrapper.appendChild(tableDiv);
-
-    document.getElementById(containerId).appendChild(wrapper);
-    
-    createTable(tableId, tableData, columns);
-}
-
-function callAllGroupedStudentTables(containerId, categoryKey, metricKey) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-
-    const uniqueCategories = [...new Set(students.map(student => student[categoryKey]))];
-
-    uniqueCategories.forEach(categoryValue => {
-        callGroupedStudentTable(containerId, categoryKey, categoryValue, metricKey);
-    });
-}
 
 // ---------------------- CREATE CHARTS ----------------------------
 
@@ -1116,7 +1018,6 @@ function createChart(canvasId, chartType, labels, data, options = {}) {
     });
 }
 
-
 function createSortedStudents(topN, func) {
     return sortedStudents = [...students]
         .map(s => ({
@@ -1140,7 +1041,6 @@ function createTopStudents(topN, func) {
 
     topStudents.forEach(s => {
         s.color = getHouseColor(s);
-        console.log(s.color);
     });
 
     return {
@@ -1191,127 +1091,6 @@ function createScatterChart(container, chartId, funcX, x, funcY, y, datasetLabel
     });
 }
 
-function updateRankedTotalCharts(topN = 10) {
-    document.getElementById("rankedCategoryContainer").innerHTML = "";
-    const container = document.getElementById("rankedChartsContainer");
-    container.innerHTML = "";
-
-    const top = createTopStudents(topN, s => s.totalDistance);
-    const weekNames = getDistanceKeys(students[0]).map(k => k.replace("Distance_", ""));
-
-    // --- Horizontal Bar: Top 10 Students ---
-
-    createTopBarChart(container, "topBarChart", top.topNames, top.topDistances, `Top ${topN} Students`, "Distances");
-
-    // --- Scatter Plot: Distance vs Improvement ---
-
-    createScatterChart(container, "scatterChart", s => getTotalDistance(s), "Total Distance", s => lastWeekImprovement(s), "Improvement", "Students");
-    
-    const datasets = top.topStudents.map((s, i) => ({
-        label: s.name,
-        data: s.cumulativeDistances,
-        borderColor: s.color,
-        backgroundColor: s.color,
-        tension: 0.2,
-        fill: false
-    }));
-
-    const lineCanvas = createChartCanvas(container, "topNOverTime");
-
-    createChart("topNOverTime", "line", weekNames, datasets, {
-        title: `Top ${topN} Students: Cumulative Distance Over Time`,
-        scales: {
-            y: { beginAtZero: true, title: { display: true, text: "Cumulative Distance" } },
-            x: { title: { display: true, text: "Week" } }
-        }
-    });
-
-    const weeklyDatasets = top.topStudents.map((s, i) => ({
-        label: s.name,
-        data: s.weeklyDistances,
-        borderColor: s.color,
-        backgroundColor: s.color,
-        tension: 0.2,
-        fill: false
-    }));
-
-    const lineCanvas2 = createChartCanvas(container, "topWeeklyOverTime");
-
-    createChart("topWeeklyOverTime", "line", weekNames, weeklyDatasets, {
-        title: `Top ${topN} Students: Weekly Distances`,
-        scales: {
-            y: { beginAtZero: true, title: { display: true, text: "Weekly Distance" } },
-            x: { title: { display: true, text: "Week" } }
-        }
-    });
-
-    // --- Pie Chart: Top Students ---
-
-    createTopPieChart(container, "topPieChart", top.topNames, top.topDistances, `Top ${topN} Students % of Total`, "Distance");
-}
-
-function updateTotalAverageCharts(topN = 10) {
-    const container = document.getElementById("rankedChartsContainer");
-    container.innerHTML = "";
-
-    const top = createTopStudents(topN, s => s.averageDistance);
-        
-    // --- Horizontal Bar: Top 10 Students ---
-
-    createTopBarChart(container, "topBarChart", top.topNames, top.topDistances, `Top ${topN} Students Average Distance`, "Distances");
-
-    // --- Scatter Plot: Distance vs Improvement ---
-    createScatterChart(container, "scatterChart", s => getAverageDistance(s), "Average Distance", s => lastWeekImprovement(s), "Improvement", "Students");
-        // --- Pie Chart: Top 10 Students ---
-
-    createTopPieChart(container, "topPieChart", top.topNames, top.topDistances, `Top ${topN} Students % of Total`, "Distance");
-
-}
-
-function updateTotalMaxCharts(topN = 10) {
-    const container = document.getElementById("rankedChartsContainer");
-    container.innerHTML = "";
-
-    const top = createTopStudents(topN, s => s.maxDistance);
-
-    // --- Horizontal Bar: Top 10 Students ---
-
-    createTopBarChart(container, "topBarChart", top.topNames, top.topDistances, `Top ${topN} Students`, "Distances");
-
-    // --- Scatter Plot: Distance vs Total Distance ---
-
-    createScatterChart(container, "scatterChart", s => getMaxDistance(s).distance, "Max Distance", s => getTotalDistance(s), "Total Distance", "Students");
-}
-
-function updateTotalMinCharts(topN = 10) {
-    const container = document.getElementById("rankedChartsContainer");
-    container.innerHTML = "";
-
-    const top = createTopStudents(topN, s => s.minDistance);
-
-    // --- Horizontal Bar: Top 10 Students ---
-
-    createTopBarChart(container, "topBarChart", top.topNames, top.topDistances, `Top ${topN} Students`, "Distances");
-
-    // --- Scatter Plot: Distance vs Total Distance ---
-
-    createScatterChart(container, "scatterChart", s => getMinDistance(s).distance, "Min Distance", s => getTotalDistance(s), "Total Distance", "Students");
-}
-
-function updateTotalWeeksCharts(topN = 10) {
-    const container = document.getElementById("rankedChartsContainer");
-    container.innerHTML = "";
-
-    const top = createTopStudents(topN, s => s.weeksAboveThreshold);
-
-    // --- Horizontal Bar: Top 10 Students ---
-
-    createTopBarChart(container, "topBarChart", top.topNames, top.topDistances, `Top ${topN} Students`, "Weeks Above Threshold");
-
-    // --- Scatter Plot ---
-
-    createScatterChart(container, "scatterChart", s => weeksAboveThreshold(s), "Weeks Above Threshold", s => getTotalDistance(s), "Total Distance", "Students");
-}
 
 function createCategoryChart(categoryKey) {
     const container = document.getElementById("rankedCategoryContainer");
@@ -1468,6 +1247,7 @@ function loadData(year, callback) {
                         student[h] = isNaN(num) ? values[i] : num;
                     }
                 });
+
 
                 return student;
             });
