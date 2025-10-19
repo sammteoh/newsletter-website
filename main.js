@@ -92,6 +92,7 @@ function createYearSelectDropdown(options, defaultValue, onChangeCallback) {
 
 if (articleId) {    
     const articleData = articles.find(a => a.id === articleId);
+    document.title = articleData.title;
     const writerData = writers.find(w => w.name === articleData.author);
     const categoryArticles = sortedArticles.filter(article => article.category === articleData.category).slice(0, 4);
     const categoryArticlesToShow = categoryArticles.filter(a => a.id !== articleData.id).slice(0, 3);
