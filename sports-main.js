@@ -541,10 +541,14 @@ function createHomeTable(games, selectedSport) {
     games.sort((a, b) => new Date(b.Date) - new Date(a.Date));
 
     const filteredGames = selectedSport === "All"
-        ? games.slice(0, 12)
+        ? games
         : games.filter(game => game.Sport === selectedSport);
 
-    filteredGames.forEach((game, index) => {
+    const filteredGames2 = selectedSport === "All"
+        ? games.slice(0, 15)
+        : games.filter(game => game.Sport === selectedSport);
+
+    filteredGames2.forEach((game, index) => {
         const gameCard = document.createElement("div");
         gameCard.classList.add("game-card");
 
@@ -704,6 +708,7 @@ function createHomeTable(games, selectedSport) {
     tbody.innerHTML = "";
 
     const players = new Set();
+
     filteredGames.forEach(game => {
         [...(game.Stars1 || []), ...(game.Sub1 || []), ...(game.Stars2 || []), ...(game.Sub2 || [])]
             .forEach(player => players.add(player));
