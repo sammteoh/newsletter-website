@@ -616,6 +616,35 @@ a {
     margin: 0;
     padding: 0;
 }
+.nav-links li {
+  position: relative;
+}
+
+#navbar li .dropdown-content {
+    max-height: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    min-width: 180px;
+    z-index: 1000;
+    flex-direction: column;
+    padding: 5px 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+.dropdown-content a {
+    display: block;
+    color: black;
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+#navbar li.dropdown:hover .dropdown-content {
+    max-height: 500px;
+    opacity: 1;
+}
 
 /* iNTRAMURALS PAGE */
 
