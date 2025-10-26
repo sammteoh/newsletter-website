@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>School Updates - The Primacy Times</title>
-    <link rel="stylesheet" href="style.css">
+    <title>The Primacy Times</title>
+    <link rel="stylesheet" href="house-points-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="icon" type="image/png" href="header/logo-light.png" media="(prefers-color-scheme: light)">
     <link rel="icon" type="image/png" href="header/logo-dark.png" media="(prefers-color-scheme: dark)">
 </head>
@@ -17,22 +18,29 @@
         <ul class="nav-links">                 
         <li><a href="index.html">Home</a></li>
         <li><a href="features.html">Features</a></li>
-        <li><a class="active" href="school-updates.html">School Updates</a></li>
+        <li><a href="school-updates.html">School Updates</a></li>
         <li><a href="intramurals.html">Intramurals</a></li>
         <li><a href="sports.html">Sports</a></li>
         <li><a href="distance-challenge.html">Distance Challenge</a></li>
-        <li><a href="house-points.html">House Points</a></li>
+        <li><a class="active" href="house-points.html">House Points</a></li>
         <li><a href="staff.html">Staff</a></li>
         </ul>
+
+        <div class="nav-right">
+            <select id="yearSelect">
+                <option value="2024">2024</option>
+            </select>
+
+            <select id="typeSelect">
+            </select>
+        </div>
     </nav>
     </header>
 
-    <main>
-        <div id="school-updates">
+    <main>  
+        <div id="main" class="main-container"></div>      
     </main>
 
-
-    <script src="articles.js"></script>
-    <script src="main.js"></script>
+    <script src ="house-points.js"></script>
 </body>
 </html>
