@@ -19,6 +19,7 @@ function getHousePointsData(logs) {
         types: Array.from(types).sort()
     };
 }
+
 function main(logs) {
     const container = document.getElementById("main");
     container.innerHTML = "";
@@ -528,9 +529,9 @@ function loadHousePointsData(year, callback) {
 function getGidForYear(year) {
     const gidMap = {
         2024: "1071412901",
-        2025: "524788319",
+        2025: "220836755",
     };
-    return gidMap[year] || "1071412901";
+    return gidMap[year] || "220836755";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
