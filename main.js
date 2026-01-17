@@ -1,8 +1,8 @@
 const params = new URLSearchParams(window.location.search);
 const articleId = params.get('id');
-const recentMonths = ["October", "September"];
+const recentMonths = ["October"];
 const today = new Date();
-const sortedArticles = articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+let sortedArticles = [];
 
 const formattedDate = today.toLocaleDateString("en-US", {
   weekday: "long",
@@ -39,9 +39,9 @@ function createArticleCard(article, className = "featured-article", wordLimit = 
     card.classList.add(className);
     card.classList.add("article-card");
 
-    const imageHTML = includeImage && article.image
-        ? `<img src="${article.image}" alt="${article.title}" class="cover-image">`
-        : "";
+    const imageHTML = article.image 
+        ? `<img src="${article.image}" alt="${article.title}" class="card-image">` 
+        : '';
 
     if (article.category === "Feature") {
         card.innerHTML = `
@@ -90,132 +90,144 @@ function createYearSelectDropdown(options, defaultValue, onChangeCallback) {
 
 // -------------------- RENDER PAGES ----------------------------------
 
-if (articleId) {    
-    const articleData = articles.find(a => a.id === articleId);
-    document.title = articleData.title;
-    const writerData = writers.find(w => w.name === articleData.author);
-    const categoryArticles = sortedArticles.filter(article => article.category === articleData.category).slice(0, 4);
-    const categoryArticlesToShow = categoryArticles.filter(a => a.id !== articleData.id).slice(0, 3);
 
-    if (articleData) {
-        const mainContainer = document.getElementById("main");
-        mainContainer.classList.add("main-container")
-        mainContainer.innerHTML = "";
+async function initArticlePage() {
+    // 1. Wait for the spreadsheet data to actually arrive
+    await loadArticlesData(); 
 
-        const innerMainContainer = document.createElement("div");
-        innerMainContainer.id = "article-inner-main-container";
-        
-        const header = document.createElement("div");
-        header.id = "article-header";
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get('id');
 
-        const categoryContainer = document.createElement("div");
-        categoryContainer.id = "article-category-container";
+    if (articleId) {    
+        const articleData = articles.find(a => a.id === articleId);
+        document.title = articleData.title;
+        const writerData = writers.find(w => w.name === articleData.author);
+        const categoryArticles = sortedArticles.filter(article => article.category === articleData.category).slice(0, 4);
+        const categoryArticlesToShow = categoryArticles.filter(a => a.id !== articleData.id).slice(0, 3);
 
-        const articleTitleContainer = document.createElement("div");
-        articleTitleContainer.id = "article-title-container";
+        if (articleData) {
+            const mainContainer = document.getElementById("main");
+            mainContainer.classList.add("main-container")
+            mainContainer.innerHTML = "";
 
-        const articleSummaryContainer = document.createElement("div");
-        articleSummaryContainer.id = "article-summary-container";
+            const innerMainContainer = document.createElement("div");
+            innerMainContainer.id = "article-inner-main-container";
+            
+            const header = document.createElement("div");
+            header.id = "article-header";
 
-        const informationContainer = document.createElement("div");
-        informationContainer.id = "article-information-container";
+            const categoryContainer = document.createElement("div");
+            categoryContainer.id = "article-category-container";
 
-        const authorContainer = document.createElement("div");
-        authorContainer.id = "article-author-container";
+            const articleTitleContainer = document.createElement("div");
+            articleTitleContainer.id = "article-title-container";
 
-        const dateIssueContainer = document.createElement("div");
-        dateIssueContainer.id = "article-date-issue-container";
+            const articleSummaryContainer = document.createElement("div");
+            articleSummaryContainer.id = "article-summary-container";
 
-        informationContainer.appendChild(authorContainer);
-        informationContainer.appendChild(dateIssueContainer);
+            const informationContainer = document.createElement("div");
+            informationContainer.id = "article-information-container";
 
-        header.appendChild(categoryContainer);
-        header.appendChild(articleTitleContainer);
-        header.appendChild(articleSummaryContainer);
-        header.appendChild(informationContainer);
+            const authorContainer = document.createElement("div");
+            authorContainer.id = "article-author-container";
 
-        if (articleData.category === "Feature") {
-            categoryContainer.innerHTML = `${articleData.category.toUpperCase()}: ${articleData.feature.toUpperCase()}`;
+            const dateIssueContainer = document.createElement("div");
+            dateIssueContainer.id = "article-date-issue-container";
+
+            informationContainer.appendChild(authorContainer);
+            informationContainer.appendChild(dateIssueContainer);
+
+            header.appendChild(categoryContainer);
+            header.appendChild(articleTitleContainer);
+            header.appendChild(articleSummaryContainer);
+            header.appendChild(informationContainer);
+
+            if (articleData.category === "Feature") {
+                categoryContainer.innerHTML = `${articleData.category.toUpperCase()}: ${articleData.feature.toUpperCase()}`;
+            } else {
+                categoryContainer.innerText = articleData.category.toUpperCase();
+            }
+            
+            articleTitleContainer.innerText = articleData.title;
+            authorContainer.innerText = articleData.author;
+            dateIssueContainer.innerHTML = `<p>${articleData.date} | Issue ${articleData.issue}</p>`
+
+            const imageContainer = document.createElement("div");
+            imageContainer.id = "article-image-container";
+
+            imageContainer.innerHTML = `${articleData.image ? `<img src="${articleData.image}" alt="${articleData.title}" class="cover-image">` : ""}`
+
+            const articleContainer = document.createElement("article");
+            articleContainer.id = "article-container";
+
+            articleContainer.innerHTML = `${articleData.content}`
+
+            const moreContainer = document.createElement("div");
+            const moreTitleContainer = document.createElement("div");
+            const moreArticleContainer = document.createElement("div");
+            moreContainer.id = "article-more-container";
+            moreTitleContainer.id = "article-more-title-container";
+            moreArticleContainer.id = "article-more-article-container"
+            moreTitleContainer.innerHTML = `<p>More from ${articleData.category}</p>`;
+
+            moreContainer.appendChild(moreTitleContainer);
+            moreContainer.appendChild(moreArticleContainer);
+
+            categoryArticlesToShow.forEach(article => {
+                const articleCard = document.createElement("div");
+                articleCard.classList.add("article-more-article");
+                articleCard.classList.add("article-card");
+                articleCard.innerHTML = `
+                    ${article.image ? `<img src="${article.image}" alt="${article.title}" class="cover-image">` : ""}
+                    <h3><a href="article.html?id=${article.id}">${article.title}</a></h3>
+                    <p><em>${article.author} • ${article.date}</em></p>
+                    <p>${sliceWords(article.content, 10)}</p>            
+                `
+
+                articleCard.addEventListener("click", () => {
+                    window.location.href = `article.html?id=${article.id}`;
+                });
+
+                moreArticleContainer.appendChild(articleCard);
+            })
+
+            innerMainContainer.appendChild(header);
+            innerMainContainer.appendChild(imageContainer);
+            innerMainContainer.appendChild(articleContainer);
+            innerMainContainer.appendChild(moreContainer);
+
+            if (writerData) {
+                const contributorsContainer = document.createElement("div");
+                contributorsContainer.id = "contributors-container";
+
+                const contributorsImageContainer = document.createElement("div");
+                contributorsImageContainer.id = "contributors-image-container";
+                contributorsImageContainer.innerHTML = `${writerData.image ? `<img src="${writerData.image}" alt="${writerData.title}" class="cover-image">` : ""}`
+
+                const writerCard = document.createElement('div');
+                writerCard.id = "article-contributor-card";
+
+                writerCard.innerHTML = `
+                    <p>${writerData.bio.replace(
+                        writerData.name,
+                        `<a href="writer-page.html?name=${encodeURIComponent(writerData.name)}">${writerData.name}</a>`
+                    )}</p>
+                `;
+
+                contributorsContainer.appendChild(contributorsImageContainer);
+                contributorsContainer.appendChild(writerCard);
+
+                innerMainContainer.appendChild(contributorsContainer);
+            }
+            mainContainer.appendChild(innerMainContainer);
         } else {
-            categoryContainer.innerText = articleData.category.toUpperCase();
+            document.getElementById('article-content').innerHTML = "<p>Article not found.</p>";
         }
-        
-        articleTitleContainer.innerText = articleData.title;
-        authorContainer.innerText = articleData.author;
-        dateIssueContainer.innerHTML = `<p>${articleData.date} | Issue ${articleData.issue}</p>`
-
-        const imageContainer = document.createElement("div");
-        imageContainer.id = "article-image-container";
-
-        imageContainer.innerHTML = `${articleData.image ? `<img src="${articleData.image}" alt="${articleData.title}" class="cover-image">` : ""}`
-
-        const articleContainer = document.createElement("article");
-        articleContainer.id = "article-container";
-
-        articleContainer.innerHTML = `${articleData.content}`
-
-        const moreContainer = document.createElement("div");
-        const moreTitleContainer = document.createElement("div");
-        const moreArticleContainer = document.createElement("div");
-        moreContainer.id = "article-more-container";
-        moreTitleContainer.id = "article-more-title-container";
-        moreArticleContainer.id = "article-more-article-container"
-        moreTitleContainer.innerHTML = `<p>More from ${articleData.category}</p>`;
-
-        moreContainer.appendChild(moreTitleContainer);
-        moreContainer.appendChild(moreArticleContainer);
-
-        categoryArticlesToShow.forEach(article => {
-            const articleCard = document.createElement("div");
-            articleCard.classList.add("article-more-article");
-            articleCard.classList.add("article-card");
-            articleCard.innerHTML = `
-                ${article.image ? `<img src="${article.image}" alt="${article.title}" class="cover-image">` : ""}
-                <h3><a href="article.html?id=${article.id}">${article.title}</a></h3>
-                <p><em>${article.author} • ${article.date}</em></p>
-                <p>${sliceWords(article.content, 10)}</p>            
-            `
-
-            articleCard.addEventListener("click", () => {
-                window.location.href = `article.html?id=${article.id}`;
-            });
-
-            moreArticleContainer.appendChild(articleCard);
-        })
-
-        innerMainContainer.appendChild(header);
-        innerMainContainer.appendChild(imageContainer);
-        innerMainContainer.appendChild(articleContainer);
-        innerMainContainer.appendChild(moreContainer);
-
-        if (writerData) {
-            const contributorsContainer = document.createElement("div");
-            contributorsContainer.id = "contributors-container";
-
-            const contributorsImageContainer = document.createElement("div");
-            contributorsImageContainer.id = "contributors-image-container";
-            contributorsImageContainer.innerHTML = `${writerData.image ? `<img src="${writerData.image}" alt="${writerData.title}" class="cover-image">` : ""}`
-
-            const writerCard = document.createElement('div');
-            writerCard.id = "article-contributor-card";
-
-            writerCard.innerHTML = `
-                <p>${writerData.bio.replace(
-                    writerData.name,
-                    `<a href="writer-page.html?name=${encodeURIComponent(writerData.name)}">${writerData.name}</a>`
-                )}</p>
-            `;
-
-            contributorsContainer.appendChild(contributorsImageContainer);
-            contributorsContainer.appendChild(writerCard);
-
-            innerMainContainer.appendChild(contributorsContainer);
-        }
-        mainContainer.appendChild(innerMainContainer);
-    } else {
-        document.getElementById('article-content').innerHTML = "<p>Article not found.</p>";
     }
+
 }
+
+initArticlePage();
 
 function renderHomePage() {
     const container = document.getElementById("features");
@@ -262,7 +274,7 @@ function renderHomePage() {
     const featureCoverArticles = featureArticles.slice(0, 3);
     const schoolArticles = sortedArticles.filter(article => article.category === "School Updates");
     const schoolCoverArticles = schoolArticles.slice(0, 2);
-    const schoolTitleArticles = schoolArticles.slice(2, 7);
+    const schoolTitleArticles = schoolArticles.slice(2, 6);
     const intramuralsArticles = sortedArticles.filter(article => article.category === "Intramurals");
     const intramuralsCoverArticles = intramuralsArticles.slice(0, 2);
     const topicsArticles = featureArticles.slice(3, 6);
@@ -350,7 +362,6 @@ function renderHomePage() {
         } else if (category === "Intramurals") {
             categoryArticles = sortedArticles.filter(article => article.category.includes(`${category}`)).slice(2, 7);
         } else if (category === "Feature") {
-            console.log("hi");
             categoryArticles = sortedArticles.filter(article => article.category.includes(`${category}`)).slice(6, 11);
         } else {
             categoryArticles = sortedArticles.filter(article => article.category.includes(`${category}`)).slice(0, 5);
@@ -636,7 +647,7 @@ function renderSchoolUpdatesPage() {
     const sectionArticleContainer = document.createElement("div");
     sectionArticleContainer.id = "section-article-container";
 
-    const filteredArticles = sortedArticles.filter(article => article.category === "School Updates");
+    const filteredArticles = sortedArticles.filter(article => article.category === "School Updates"); 
     const recentArticles = filteredArticles.filter(article => article.date.includes(recentMonths[0]) || article.date.includes(recentMonths[1])).slice(0, 4);
     const recentCoverArticle = recentArticles[0];
     const recentSecondaryArticles = recentArticles.slice(1, 4);
@@ -646,7 +657,7 @@ function renderSchoolUpdatesPage() {
     const SASecondaryArticles = SAArticles.slice(1, 4);
 
     const pageCategories = ["SA Events"];
-    const categories = ["SA Event", "Pillar Day", "Club", "Competition", "Holiday", "Bible"];
+    const categories = ["SA Event", "Pillar Day", "Club", "Competition", "Bible"];
     const allCategories = [...pageCategories, ...categories];
 
     categoryContainer.innerHTML = `<h1 class="school-updates-page-recent-updates">Recent Updates</h1>`
@@ -923,8 +934,9 @@ function renderWriterPage() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const path = window.location.pathname;
+    await loadArticlesData();
 
     if (path.endsWith("index.html") || path === "/" || path.endsWith("/newsletter-website/")) {
         renderHomePage();

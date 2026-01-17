@@ -1,4 +1,6 @@
-const articles = [
+let articles = []
+/*
+articles = [
     {
         title: "How Do We Find The Truth?",
         author: "Leo Li",
@@ -2664,17 +2666,72 @@ const articles = [
         `
     }
 ];
+*/
 
-articles.forEach(article => { 
-    article.id = `issue-${article.issue}-${article.title.replace(/\s+/g, "-")}`
+async function loadArticlesData() {
+    const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRMXMR13uMKs85VZrY8PoCDnR3Mnc6KVhUpz6V16cCt8y-MMP2MMuYonpTKFUFGfDvFGkcu279PlgPX/pub?output=csv&gid=1738836167`;
     
-    if (article.category === "Spiritual Thought") {
-        article.image = `${article.category.toLowerCase().replace(/\s+/g, "-")}/issue-${article.issue}.jpg`
-    } else {
-        if (!article.format) {
-            article.image = `${article.category.toLowerCase().replace(/\s+/g, "-")}/issue-${article.issue}-${article.title.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-")}.jpg`;
-        } else {
-            article.image = `${article.category.toLowerCase().replace(/\s+/g, "-")}/issue-${article.issue}-${article.title.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-")}.${article.format}`;
-        }
-    }
-})
+    return fetch(csvUrl)
+        .then(response => response.text())
+        .then(csvText => {
+            const rows = [];
+            const regex = /(?:,|\r?\n|^)(?:"([^"]*(?:""[^"]*)*)"|([^",\r?\n]*))/g;
+            let row = [];
+            let match;
+            
+            while ((match = regex.exec(csvText)) !== null) {
+                if (match[0].startsWith('\n') || match[0].startsWith('\r')) {
+                    if (row.length > 0) rows.push(row);
+                    row = [];
+                }
+                let value = (match[1] !== undefined) ? match[1].replace(/""/g, '"') : match[2];
+                row.push(value ? value.trim() : "");
+            }
+            if (row.length > 0) rows.push(row);
+
+            const headers = rows[0].map(h => h.toLowerCase().trim()); 
+            
+            articles = rows.slice(1).map(values => {
+                const article = {};
+                headers.forEach((header, i) => {
+                    let value = values[i] || "";
+
+                    const titleSlug = article.title 
+                        ? article.title.toLowerCase().trim().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-") 
+                        : "no-title";
+
+                    article.id = `issue-${article.issue}-${titleSlug}`;
+                                        
+                    if (header === "subcategory") {
+                        article[header] = value ? value.split(",").map(s => s.trim()) : [];
+                    } else if (header === "issue") {
+                        article[header] = parseInt(value) || 0;
+                    } else {
+                        article[header] = value || null;
+                    }
+                });
+
+                if (article.image && article.image.includes("drive.google.com")) {
+                    const fileId = article.image.split('id=')[1] || article.image.split('/d/')[1].split('/')[0];
+                    article.image = `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+                } else if (!article.image) {
+                    const categoryPath = article.category ? article.category.toLowerCase().replace(/\s+/g, "-") : "uncategorized";
+                    const titleSlug = article.title ? article.title.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-") : "no-title";
+                    const ext = article.format || "jpg";
+                    article.image = `${categoryPath}/issue-${article.issue}-${titleSlug}.${ext}`;
+                }
+
+                return article;
+            });
+
+            sortedArticles = [...articles].sort((a, b) => b.issue - a.issue);
+            renderArticles();
+        })
+        .catch(err => console.error("Error loading articles:", err));
+}
+
+function renderArticles() {
+    console.log("Ready to display:", articles.length, "articles");
+}
+
+loadArticlesData();
