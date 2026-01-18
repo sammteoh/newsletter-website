@@ -51,13 +51,13 @@ const writers = [
         class: 27,
         job: [["2025-26", "Editor"]],
         format: "webp",
-        bio: "Stella is a 10th grader in Primacy. She had never been to any international school before she came to Primacy. She lovess playing sports, and playing music like oboe."
+        bio: "Stella Liao is a 10th grader in Primacy. She had never been to any international school before she came to Primacy. She lovess playing sports, and playing music like oboe."
     },
     {
         name: "Larissa Kuo",
         class: 26,
         job: [["2024-25", "Communications Director"]],
-        bio: "Larissa was born and raised in Hsinchu, Taiwan. She moved to Taipei in 2020 for middle school and stayed there ever since. She enjoys listening to music in a quiet atmosphere and shopping in her free time."
+        bio: "Larissa Kuo was born and raised in Hsinchu, Taiwan. She moved to Taipei in 2020 for middle school and stayed there ever since. She enjoys listening to music in a quiet atmosphere and shopping in her free time."
     },
     {
         name: "Jude Chin",
@@ -87,7 +87,7 @@ const writers = [
         name: "Zack Chen",
         class: 26,
         job: [["2025-26", "Editor"]],
-        bio: "Zack is a senior at Primacy. He is a very cool guy who grew up in Taiwan. He likes listening/playing music, gaming, and spending time with loved ones."
+        bio: "Zack Chen is a senior at Primacy. He is a very cool guy who grew up in Taiwan. He likes listening/playing music, gaming, and spending time with loved ones."
     },
     {
         name: "Chiung Wu",
@@ -99,7 +99,7 @@ const writers = [
         name: "Cheryl Lee",
         class: 27,
         job: [["2025-26", "Editor"]],
-        bio: "Cheryl is a junior. She loves sleeping, eating, and watching funny videos. She has been scared of fish ever since her dad got some."
+        bio: "Cheryl Lee is a junior. She loves sleeping, eating, and watching funny videos. She has been scared of fish ever since her dad got some."
     },
     {
         name: "Michael Brannaka",

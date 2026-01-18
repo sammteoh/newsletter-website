@@ -1,27 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>About The Primacy Times</title>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
     <link rel="icon" type="image/png" href="header/logo-light.png" media="(prefers-color-scheme: light)">
     <link rel="icon" type="image/png" href="header/logo-dark.png" media="(prefers-color-scheme: dark)">
 </head>
 <body>
     <header>
-        <nav class="navbar">
-            <a href="/index.html">Home</a>
-            <a href="/features.html">Features</a>
-            <a href="/school-updates.html">School Updates</a>
-            <a href="distance-challenge.html">Distance Challenge</a>
-            <a href="/staff.html">Staff</a>
-            <a class="active" href="about.html">About</a>
-        </nav>
+    <div class="top-header">
+        <div class="date" id="current-date"></div>
+        <div class="title">The Primacy Times</div>
+    </div>
+
+    <nav id="navbar">
+        <ul class="nav-links">                 
+        <li><a href="index.html">Home</a></li>
+        <li><a href="features.html">Features</a></li>
+        <li><a href="school-updates.html">School Updates</a></li>
+        <li><a href="intramurals.html">Intramurals</a></li>
+        <li><a href="sports.html">Sports</a></li>
+        <li><a href="distance-challenge.html">Distance Challenge</a></li>
+        <li><a href="house-points.html">House Points</a></li>
+        <li><a href="staff.html">Staff</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        </ul>
+    </nav>
     </header>
 
-    <main>
-        <p> About Us</p>
+        <main>
+            <div id="aboutContent" style="text-align: center; width: 50%; display: block; margin: 0px auto; text-align: justify;">
+        <h2>About</h2>
+
+        <p>The Primacy Times is the official school newsletter of The Primacy Collegiate Academy, founded in August 2024 by Samuel Teoh (Managing Editor), Michael Brannaka (Head Sponsor), Jathrena Sikol (Sponsor), Larissa Kuo (Communications Director), Nicole Kuo, William Lee, and Jude Chin. Our mission is to provide a platform for students and teachers to share their stories and foster an inclusive and collaborative community. </p>
+
+        <h3>Conversion Rates</h3>
+        <p class="conversion">1 kilometer = 0.621371 miles = 7 laps (updated August 2025)</p>
+
+        <h3>Sports</h3>
+        <p>The sports rankings are calculated based on three metrics: Win Loss Points, Total Points, Point Differential, and Player Type (if individual). 
+            For Win-Loss Points, one point is awarded for a win, and no points are awarded for a loss.
+            Point Differential Percentage is calculated by dividing the point differential (difference between win points and loss points) by the total points earned by both teams. 
+            The Player Type Multiplier is determined based on whether the player is a starting player or a substitute.</p>
+        <p class="formula">$$T_S = \left( P_{WL } + \left( \frac{\Delta P}{P_t} \right) \times 0.1 \right) \times M$$</p>
+        
+        <h3>Total Distance</h3>
+        <p>The total distance of a student is calculated by summing the distances run each week. 
+        The total distance of a category (ex. House, Gender, Grade) is calculated by summing the distances of its individual members each week.</p>
+
+        <h3>Average Distance</h3>
+        <p>The average distance is calculated by dividing the total distance run by the number of weeks where the distance run was greater than zero.</p>
+        <p class="formula">$$\bar{D} = \frac{\text{Total Dist}}{\text{No. of Wks with Dist > 0}}$$</p>
+
+        <h3>Standard Deviation (Coefficient of Variation)</h3>
+        <p>The “consistency” of a student is calculated by dividing the standard deviation of a student’s distances per week by the average distance run by the student per week. 
+        The lower the number is, the higher the consistency. The higher the number is, the lower the consistency.</p>
+        <p class="formula">$$CV = \frac{\sigma}{\mu} \times 100\%$$</p>
+
+        <h3>Max/Min Distance</h3>
+        <p>The maximum distance is the greatest distance run in a single session. The minimum distance is the lowest distance run in a single session.</p>
+
+        <h3>Weeks Above Threshold</h3>
+        <p>This metric counts the number of weeks a student has run at least 10 kilometers in a single session.</p>
+
+        <h3>Improvement</h3>
+        <p>Improvement is calculated by dividing the difference between the current week’s distance and the previous week’s distance by the previous week’s distance as a percentage. 
+        A negative number means deterioration, and a positive number means improvement from the previous week.</p>
+        <p class="formula">$$\text{Imp. (%)} = \frac{\text{Curr Dist} - \text{Prev Dist}}{\text{Prev Dist}} \times 100\%$$</p>
+    </div>
+    </body>
     </main>
 
+    <script src="articles.js"></script>
+    <script src="writers.js"></script>  
     <script src="main.js"></script>
 </body>
 </html>
