@@ -117,7 +117,7 @@ async function loadWritersData() {
     const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRMXMR13uMKs85VZrY8PoCDnR3Mnc6KVhUpz6V16cCt8y-MMP2MMuYonpTKFUFGfDvFGkcu279PlgPX/pub?output=csv&gid=2039371302`;
 
     try {
-        const response = await fetch(csvUrl);
+        const response = await cachedFetch(csvUrl);
         const csvText = await response.text();
         
         const rows = [];
