@@ -11,7 +11,7 @@ const formattedDate = today.toLocaleDateString("en-US", {
   day: "numeric"
 });
 
-const jobOrder = ["Editor-in-Chief", "Communications Director", "Editor", "Sponsor"];
+const jobOrder = ["Editor-in-Chief", "Managing Editor", "Communications Director", "Editor", "Sponsor"];
 
 const dateElement = document.getElementById("current-date");
 dateElement.textContent = formattedDate;
@@ -92,8 +92,8 @@ function createYearSelectDropdown(options, defaultValue, onChangeCallback) {
 
 
 async function initArticlePage() {
-    // 1. Wait for the spreadsheet data to actually arrive
     await loadArticlesData(); 
+    writers = await loadWritersData();
 
     const urlParams = new URLSearchParams(window.location.search);
     const articleId = urlParams.get('id');
@@ -102,6 +102,7 @@ async function initArticlePage() {
         const articleData = articles.find(a => a.id === articleId);
         document.title = articleData.title;
         const writerData = writers.find(w => w.name === articleData.author);
+
         const categoryArticles = sortedArticles.filter(article => article.category === articleData.category).slice(0, 4);
         const categoryArticlesToShow = categoryArticles.filter(a => a.id !== articleData.id).slice(0, 3);
 
@@ -945,6 +946,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else if (path.endsWith("school-updates.html")) {
         renderSchoolUpdatesPage();
     } else if (path.endsWith("staff.html")) {
+        writers = await loadWritersData();
+
         renderStaffPage();
 
         document.getElementById("year-select").addEventListener("change", (e) => {
@@ -952,6 +955,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderStaffPage(selectedYear);
         });
     } else if (path.endsWith("writer-page.html")) {
+        writers = await loadWritersData();
+        
         renderWriterPage();
     }
 });

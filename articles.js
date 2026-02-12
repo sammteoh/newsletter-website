@@ -2725,13 +2725,8 @@ async function loadArticlesData() {
             });
 
             sortedArticles = [...articles].sort((a, b) => b.issue - a.issue);
-            renderArticles();
         })
         .catch(err => console.error("Error loading articles:", err));
-}
-
-function renderArticles() {
-    console.log("Ready to display:", articles.length, "articles");
 }
 
 loadArticlesData();

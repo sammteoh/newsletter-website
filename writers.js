@@ -1,3 +1,5 @@
+let writers = [];
+/*
 const writers = [
     {
         name: "Samuel Teoh",
@@ -109,11 +111,71 @@ const writers = [
         format: "JPG",
     }
 ]
+    */
 
-writers.forEach(writer => {
-    if (!writer.format) {
-        writer.image = `writers/${writer.name.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-")}.png`;
-    } else {
-        writer.image = `writers/${writer.name.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-")}.${writer.format}`;
+async function loadWritersData() {
+    const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRMXMR13uMKs85VZrY8PoCDnR3Mnc6KVhUpz6V16cCt8y-MMP2MMuYonpTKFUFGfDvFGkcu279PlgPX/pub?output=csv&gid=2039371302`;
+
+    try {
+        const response = await fetch(csvUrl);
+        const csvText = await response.text();
+        
+        const rows = [];
+        const regex = /(?:,|\r?\n|^)(?:"([^"]*(?:""[^"]*)*)"|([^",\r?\n]*))/g;
+        let row = [];
+        let match;
+        while ((match = regex.exec(csvText)) !== null) {
+            if (match[0].startsWith('\n') || match[0].startsWith('\r')) {
+                if (row.length > 0) rows.push(row);
+                row = [];
+            }
+            let value = (match[1] !== undefined) ? match[1].replace(/""/g, '"') : match[2];
+            row.push(value ? value.trim() : "");
+        }
+        if (row.length > 0) rows.push(row);
+
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+
+        const writers = rows.slice(1).map(values => {
+            const writer = {};
+            headers.forEach((header, i) => {
+                let value = values[i] || "";
+                
+                if (header === "class") {
+                    writer[header] = parseInt(value) || null;
+                } else if (header === "job") {
+                    let cleanValue = value.replace(/[\[\]"]/g, "");
+                    writer[header] = cleanValue ? cleanValue.split(',').map(pair => {
+                        return pair.includes(':') ? pair.split(':').map(s => s.trim()) : [pair.trim()];
+                    }) : [];
+                } else if (header === "bio") {
+                    writer[header] = value.replace(/^"|"$/g, '').replace(/\\"/g, '"').trim();
+                } else {
+                    writer[header] = value || null;
+                }
+            });
+
+            if (writer.image && writer.image.includes("drive.google.com")) {
+                const fileId = writer.image.split('id=')[1] || writer.image.split('/d/')[1].split('/')[0];
+                writer.image = `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+            } else if (!writer.image) {
+                const nameSlug = writer.name ? writer.name.toLowerCase().replace(/[^a-zA-Z0-9 ]/g, "").replace(/\s+/g, "-") : "anonymous";
+                const ext = writer.format || "png";
+                writer.image = `writers/${nameSlug}.${ext}`;
+            }
+
+            return writer;
+        });
+
+        console.log("Writers successfully parsed:", writers);
+        return writers;
+        
+    } catch (err) {
+        console.error("Error loading writers:", err);
+        return [];
     }
-})
+}
+
+function renderWriters(writersArray) {
+    console.log("Ready to display:", writersArray.length, "writers");
+}
