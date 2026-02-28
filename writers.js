@@ -166,16 +166,10 @@ async function loadWritersData() {
 
             return writer;
         });
-
-        console.log("Writers successfully parsed:", writers);
         return writers;
         
     } catch (err) {
         console.error("Error loading writers:", err);
         return [];
     }
-}
-
-function renderWriters(writersArray) {
-    console.log("Ready to display:", writersArray.length, "writers");
 }

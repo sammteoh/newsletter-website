@@ -5,13 +5,18 @@ function updateAll() {
     createCategoryHomeTable("gradeContainer", "Grade");
 }
 
-loadData(yearSelect.value, updateAll);
+loadData(yearSelect.value, termSelect.value, updateAll);
 
 yearSelect.addEventListener("change", () => {
-    loadData(yearSelect.value, updateAll);
+    loadData(yearSelect.value, termSelect.value, updateAll);
 });
+
+termSelect.addEventListener("change", () => {
+    currentTerm = termSelect.value;
+    loadData(yearSelect.value, termSelect.value, updateAll);
+})
 
 unitSelect.addEventListener("change", () => {
     currentUnit = unitSelect.value;
-    loadData(yearSelect.value, updateAll);
+    loadData(yearSelect.value, termSelect.value, updateAll);
 });

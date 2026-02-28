@@ -4,6 +4,11 @@ const UNIT_CONVERSIONS = {
     laps: 7
 }
 
+const SEMESTER_MAP = {
+    "first semester": ["Aug", "Sep", "Oct", "Nov", "Dec"],
+    "second semester": ["Jan", "Feb", "Mar", "Apr", "May"]
+}
+
 const METRICS = {
     totalDistance: { label: "Total Distance", fn: s => getTotalDistance(s) },
     averageDistance: { label: "Average Distance", fn: s => getAverageDistance(s) },
@@ -38,6 +43,7 @@ const GRADECOLORS = {
 
 let students = [];
 let currentUnit = "kilometers";
+let currentTerm = "full year";
 
 function filterStudents(students, categoryKey, categoryValue) {
     return students.filter(student => {
@@ -68,7 +74,17 @@ function getMostRecentDistanceDate() {
 // ------------- INDIVIDUAL CALCULATIONS ------------------------
 
 function getDistanceKeys(student) {
-    return Object.keys(student).filter(key => key.includes("Distance"));
+    let keys = Object.keys(student).filter(key => key.includes("Distance"));
+
+    if (currentTerm !== "full year") {
+        const allowedMonths = SEMESTER_MAP[currentTerm];
+
+        keys = keys.filter(key => {
+            return allowedMonths.some(month => key.includes(month));
+        })
+    }
+    
+    return keys;
 }
 
 function getDistanceValues(student) {
@@ -388,6 +404,7 @@ function rankHomeTable(students, order = "desc") {
         const ranks = weeklyRanks[student.Name];
 
         const currentRank = ranks[lastWeekIndex].rank;
+
         const previousRank = prevWeekIndex >= 0 ? ranks[prevWeekIndex].rank : null;
 
         return {
@@ -406,7 +423,6 @@ function rankHomeTable(students, order = "desc") {
     studentMetrics.forEach((entry, index) => {
         entry.rank = index + 1;
     });
-    console.log(studentMetrics)
     return studentMetrics;
 }
 
@@ -1227,8 +1243,10 @@ function createCategoryChart(categoryKey) {
     setTimeout(() => wrapper.classList.add("visible"), 50);
 }
 
-function loadData(year, callback) {
+function loadData(year, term, callback) {
     let csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRMXMR13uMKs85VZrY8PoCDnR3Mnc6KVhUpz6V16cCt8y-MMP2MMuYonpTKFUFGfDvFGkcu279PlgPX/pub?output=csv&gid=${getGidForYear(year)}`
+
+    currentTerm = term;
 
     cachedFetch(csvUrl)
         .then(response => response.text())

@@ -874,7 +874,7 @@ function renderWriterPage() {
     const writer = writers.find(w => w.name === writerName);
     if (!writer) return;
 
-    const writerArticles = articles.filter(a => a.author === writerName);
+    const writerArticles = articles.filter(a => a.author === writerName).sort((a, b) => new Date(b.Date) - new Date(a.Date));
     const articleCount = writerArticles.length;
 
     const container = document.getElementById("writer");
