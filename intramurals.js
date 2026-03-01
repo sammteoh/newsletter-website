@@ -512,7 +512,7 @@ function loadAllData(year, callback) {
     let sportsLoaded = false;
     let distanceLoaded = false;
 
-    loadData(year, data => {
+    loadData(year, "full year", data => {
         distanceData = data;
         distanceLoaded = true;
         if (sportsLoaded) callback();
